@@ -32,29 +32,30 @@ int Maat_InitEventTimer(unsigned long ulMicros, void (*fEventCallback)())
     int iStatus = -1;
     unsigned long ulTimerClkFreq = 0;
     unsigned long ulCnts = 0;
-    uint16_t uiScaledMicros = ulMicros;
+    unsigned long ulScaledMicros = ulMicros;
     g_ulEventCeil = 1;
-    while(uiScaledMicros > MAX_MICROS)
+    while(ulScaledMicros > MAX_MICROS)
     {
         g_ulEventCeil++;
         while(ulMicros % g_ulEventCeil != 0)
         {
             g_ulEventCeil++;
         }
-        uiScaledMicros = ulMicros / g_ulEventCeil;
+        ulScaledMicros = ulMicros / g_ulEventCeil;
     }
     for(uint8_t i = 0; i < 5; i++)
     {
         ulTimerClkFreq = CLK_FREQ / g_uiTIMER_PRESCALERS[i];
-        ulCnts = uiScaledMicros * ulTimerClkFreq / 1000000UL;
+
+        ulCnts = ulScaledMicros * ulTimerClkFreq / 1000000UL;
         if(ulCnts < 0x100 && ulCnts != 0)
         {
-            iStatus = 0;
+            iStatus = ulScaledMicros * ulTimerClkFreq % 1000000UL;
             ptrTimer0->uiTCCRB = i+1;
             break;
         }
     }
-    if(iStatus == 0)
+    if(iStatus != -1)
     {
         g_EventTimerCallback = fEventCallback;
         ptrTimer0->uiTCCRA = 0;

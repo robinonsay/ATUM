@@ -14,7 +14,7 @@ void init(void)
 int main(void)
 {
     init();
-    Maat_InitEventTimer(500000, &LEDCallback);
+    Maat_InitEventTimer(1000000, &LEDCallback);
     while(1)
     {
     }   
