@@ -3,7 +3,7 @@
 #define LED_PIN (5)
 
 void init(void);
-void sleep(unsigned long usecs);
+void LEDCallback();
 
 void init(void)
 {
@@ -14,19 +14,14 @@ void init(void)
 int main(void)
 {
     init();
+    Maat_InitEventTimer(500000, &LEDCallback);
     while(1)
     {
-        ptrB->pin |= (1 << LED_PIN);
-        sleep(500000);
     }   
     return 0;
 }
 
-void sleep(unsigned long usecs)
+void LEDCallback()
 {
-    unsigned long i = 0;
-    while(i < usecs * CLK_PERIOD)
-    {
-        i+=10;
-    }
+    ptrB->pin |= (1 << LED_PIN);
 }

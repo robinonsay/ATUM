@@ -1,7 +1,7 @@
 #ifndef MAAT_MEM_H
 #define MAAT_MEM_H
 
-#include "maat_types.h"
+#include <avr/common.h>
 
 #define MEM_OFFST   (0x20)
 
@@ -12,6 +12,9 @@
 #define TIMER0_ADDR (0x24 + MEM_OFFST)
 #define TIMER1_ADDR (0x84)
 #define TIMER2_ADDR (0xB0)
+
+#define TIMSK_ADDR (0x6E)
+#define TIFLG_ADDR (0x15 + MEM_OFFST)
 
 typedef struct ATUM_PORT_TAG
 {
@@ -41,12 +44,30 @@ typedef struct ATUM_TIMER_16_TAG
     uint16_t uiOCRB;
 } ATUM_TIMER_16_T;
 
-ATUM_PORT_T* const ptrB = (ATUM_PORT_T*) B_ADDR;
-ATUM_PORT_T* const ptrC = (ATUM_PORT_T*) C_ADDR;
-ATUM_PORT_T* const ptrD = (ATUM_PORT_T*) D_ADDR;
+typedef struct ATUM_TIMER_INT_MASK_TAG
+{
+    uint8_t uiTIMSK0;
+    uint8_t uiTIMSK1;
+    uint8_t uiTIMSK2;
+}ATUM_TIMER_INT_MASK_T;
 
-ATUM_TIMER_8_T* const ptrTimer0 = (ATUM_TIMER_8_T*) TIMER0_ADDR;
-ATUM_TIMER_16_T* const ptrTimer1 = (ATUM_TIMER_16_T*) TIMER1_ADDR;
-ATUM_TIMER_8_T* const ptrTimer2 = (ATUM_TIMER_8_T*) TIMER2_ADDR;
+typedef struct ATUM_TIMER_INT_FLAG_TAG
+{
+    uint8_t uiTIFLG0;
+    uint8_t uiTIFLG1;
+    uint8_t uiTIFLG2;
+}ATUM_TIMER_INT_FLAG_T;
+
+
+ATUM_PORT_T* const ptrB;
+ATUM_PORT_T* const ptrC;
+ATUM_PORT_T* const ptrD;
+
+ATUM_TIMER_8_T* const ptrTimer0;
+ATUM_TIMER_16_T* const ptrTimer1;
+ATUM_TIMER_8_T* const ptrTimer2;
+
+ATUM_TIMER_INT_MASK_T* const ptrTIMSK;
+ATUM_TIMER_INT_FLAG_T* const ptrTFLG;
 
 #endif /* MAAT_MEM_H */
