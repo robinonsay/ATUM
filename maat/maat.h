@@ -5,14 +5,13 @@
 #define CLK_FREQ_MHZ    (16)
 
 #include "maat_mem.h"
+#include <avr/common.h>
 
-typedef enum EVENT_TIMER_8_TAG
-{
-    EVENT_TIMER_A=0,
-    EVENT_TIMER_B=1
-}EVENT_TIMER_8_T;
+typedef unsigned long long time_t;
 
-void Maat_Delay(uint8_t ulMicros);
+void Maat_Init();
+int Maat_InitTime(uint16_t uiTicksMicros);
+time_t Maat_TimeNow();
 int Maat_InitEventTimer(unsigned long ulMicros, void (*fEventCallback)());
 
 #endif /* MAAT_H */

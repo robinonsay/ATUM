@@ -2,10 +2,10 @@
 #include "maat.h"
 #define LED_PIN (5)
 
-void init(void);
-void LEDCallback();
+static void init(void);
+static void LEDCallback();
 
-void init(void)
+static void init(void)
 {
     ptrB->ddr |= (1 << LED_PIN);
     ptrB->port &= ~(1 << LED_PIN);
@@ -14,6 +14,8 @@ void init(void)
 int main(void)
 {
     init();
+    Maat_Init();
+    Maat_InitTime(1000);
     Maat_InitEventTimer(1000000, &LEDCallback);
     while(1)
     {
@@ -21,7 +23,10 @@ int main(void)
     return 0;
 }
 
-void LEDCallback()
+static void LEDCallback()
 {
-    ptrB->pin |= (1 << LED_PIN);
+    if(Maat_TimeNow() > 10000000ULL)
+    {
+        ptrB->pin |= (1 << LED_PIN);
+    }
 }
