@@ -1,33 +1,35 @@
 import serial
 import struct
 import curses
+import argparse
 from curses import wrapper
 import time
 
+dev = '/dev/ttyACM0'
 
-def main(stdscr):
+def main(stdscr, device, baud_rate):
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(True)
-    with serial.Serial('/dev/ttyACM0', 57600, parity=serial.PARITY_EVEN) as ser:
+    with serial.Serial(device, baud_rate, parity=serial.PARITY_EVEN) as ser:
         stdscr.clear()
-        stdscr.addstr(0, 0, "MET:",
+        stdscr.addstr((curses.LINES - 1) // 2 -1, 0, "Raw Output:",
                     curses.A_BOLD)
-        first = True
         while True:
-            last = time.time_ns()
-            byte_range  = ser.readline()[:-1]
-            now = time.time_ns()
-            if len(byte_range) == 4:
-                met = struct.unpack('<L', byte_range)[0]
-                stdscr.addstr(0, 5, f"{met}")
-                stdscr.addstr(1, 5, f"{(now-last) / 1E9}")
+            byte_range  = ser.readline()
+            stdscr.addstr((curses.LINES - 1) // 2, 0, f"{byte_range.decode('UTF-8')}")
             stdscr.refresh()
 
 
-# wrapper(main)
-with serial.Serial('/dev/ttyACM0', 57600, parity=serial.PARITY_EVEN) as ser:
-        while True:
-            byte_range  = ser.readline()[:-1]
-            print(byte_range.decode("UTF-8"))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Debug Console For Atum Flight Computer")
+    parser.add_argument('-d', '--device',
+                        default='/dev/ttyACM0',
+                        help='The Flight Computer Serial Port')
+    parser.add_argument('-b', '--baud_rate',
+                        default=57600,
+                        help='The Flight Computer Serial Port Baud Rate')
+    args = parser.parse_args()
+    wrapper(main, args.device, args.baud_rate)
 
