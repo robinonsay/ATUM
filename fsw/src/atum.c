@@ -8,7 +8,7 @@ MAAT_SCH_ITEM_T g_schItemTable[] =
 {
     {
         .Init = Atum_LEDInit,
-        .Main = Atum_LEDMain
+        .Main = Atum_LEDMain,
     }
 };
 

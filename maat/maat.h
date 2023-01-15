@@ -7,8 +7,10 @@
 
 #include "maat_mem.h"
 
+#define NULL    ((void *) 0)
 #define true    (1)
 #define false   (0)
+#define APP_LOG_SIZE    (512)
 
 typedef unsigned long long time_t;
 typedef unsigned long size_t;
@@ -16,8 +18,8 @@ typedef unsigned char bool_t;
 
 typedef struct MAAT_SCH_ITEM_TAG
 {
-    int32_t (*Init)();
-    int32_t (*Main)();
+    int32_t (*Init)(char log[]);
+    int32_t (*Main)(char log[]);
 } MAAT_SCH_ITEM_T;
 
 
