@@ -4,7 +4,7 @@
 #define ATUM_LED_TEST
 #include "atum_led_test.h"
 
-MAAT_SCH_ITEM_T g_schItemTable[] = 
+MAAT_SCH_ITEM_T g_schItemTable[100] = 
 {
     {
         .Init = Atum_LEDInit,

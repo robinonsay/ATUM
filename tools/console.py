@@ -10,14 +10,16 @@ dev = '/dev/ttyACM0'
 def main(stdscr, device, baud_rate):
     curses.noecho()
     curses.cbreak()
+    curses.curs_set(0)
     stdscr.keypad(True)
-    with serial.Serial(device, baud_rate, parity=serial.PARITY_EVEN) as ser:
+    with serial.Serial(device, baud_rate, parity=serial.PARITY_EVEN, timeout=0.5) as ser:
         stdscr.clear()
         stdscr.addstr((curses.LINES - 1) // 2 -1, 0, "Raw Output:",
                     curses.A_BOLD)
         while True:
-            byte_range  = ser.readline()
-            stdscr.addstr((curses.LINES - 1) // 2, 0, f"{byte_range.decode('UTF-8')}")
+            lines  = ser.read(512)
+            # for n, line in enumerate(lines):
+            stdscr.addstr((curses.LINES - 1) // 2, 0, f"{lines.decode('UTF-8')}")
             stdscr.refresh()
 
 
