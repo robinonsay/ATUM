@@ -8,12 +8,12 @@
 #define RXC         (7)
 #define UPE         (2)
 #define UPM         (4)
-int8_t Maat_InitUART(uint32_t uiBaudRate)
+int8_t Maat_InitUART(unsigned long uiBaudRate)
 {
     int8_t iStatus = 0;
     if(uiBaudRate == 0)
     {
-        uiBaudRate = MAAT_BAUD_RATE;
+        uiBaudRate = MAA_DEFAULT_BAUD_RATE;
     }
     ptrUSART->uiUBRR = (uint16_t)(0xFFF & (CLK_FREQ / (16 * uiBaudRate) - 1));\
     ptrUSART->uiUCSRB = (1 << RX_ENABLE) | (1 << TX_ENABLE);

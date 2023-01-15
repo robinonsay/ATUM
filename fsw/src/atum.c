@@ -1,32 +1,23 @@
-#include "atum.h"
 #include "maat.h"
-#define LED_PIN (5)
 
-static void init(void);
+#include "atum.h"
+#define ATUM_LED_TEST
+#include "atum_led_test.h"
 
-static void init(void)
+MAAT_SCH_ITEM_T g_schItemTable[] = 
 {
-    ptrB->ddr |= (1 << LED_PIN);
-    ptrB->port &= ~(1 << LED_PIN);
-}
+    {
+        .Init = Atum_LEDInit,
+        .Main = Atum_LEDMain
+    }
+};
+
+uint16_t g_uiNumItems = sizeof(g_schItemTable) / sizeof(g_schItemTable[0]);
 
 int main(void)
 {
-    init();
     Maat_Init();
-    Maat_InitUART(57600);
-    unsigned long ulLastTime = 0;
-    unsigned long ulNow = 0;
-    while(1)
-    {
-        ulNow = Maat_TimeNow();
-        if(ulNow - ulLastTime >= 1)
-        {
-            ulLastTime = ulNow;
-            Maat_WriteUART((char*) &ulNow, sizeof(ulNow));
-            Maat_StrWriteUART("\n");
-            ptrB->pin |= 1 << LED_PIN;
-        }
-    }   
+    Maat_InitSch(g_schItemTable, g_uiNumItems);
+    Maat_RunSch();
     return 0;
 }

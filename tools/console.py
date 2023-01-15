@@ -25,4 +25,9 @@ def main(stdscr):
             stdscr.refresh()
 
 
-wrapper(main)
+# wrapper(main)
+with serial.Serial('/dev/ttyACM0', 57600, parity=serial.PARITY_EVEN) as ser:
+        while True:
+            byte_range  = ser.readline()[:-1]
+            print(byte_range.decode("UTF-8"))
+
