@@ -29,4 +29,4 @@ $(OUT_DIR) $(INC_OUT) $(LIB_DIR):
 	mkdir -p $@
 
 clean:
-	rm -r $(OUT_DIR)
+	rm -rf $(OUT_DIR)

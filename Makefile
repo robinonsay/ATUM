@@ -16,7 +16,7 @@ MCU := atmega328p
 
 export OUT_DIR MCU COMPILE_OPTIONS
 
-.PHONY: all libs hex clean install
+.PHONY: all libs hex clean flash
 
 all: hex $(TARGET)
 
@@ -30,9 +30,9 @@ $(OUT_DIR):
 	mkdir $@
 
 clean:
-	rm -r $(OUT_DIR)
+	rm -rf $(OUT_DIR)
 
-install: hex
+flash: hex
 	avrdude -c arduino -p m328p -P $(DEV) -U flash:w:$(HEX)
 
 libs:

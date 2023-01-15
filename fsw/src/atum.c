@@ -3,7 +3,6 @@
 #define LED_PIN (5)
 
 static void init(void);
-static void LEDCallback();
 
 static void init(void)
 {
@@ -15,18 +14,19 @@ int main(void)
 {
     init();
     Maat_Init();
-    Maat_InitTime(1000);
-    Maat_InitEventTimer(1000000, &LEDCallback);
+    Maat_InitUART(57600);
+    unsigned long ulLastTime = 0;
+    unsigned long ulNow = 0;
     while(1)
     {
+        ulNow = Maat_TimeNow();
+        if(ulNow - ulLastTime >= 1)
+        {
+            ulLastTime = ulNow;
+            Maat_WriteUART((char*) &ulNow, sizeof(ulNow));
+            Maat_StrWriteUART("\n");
+            ptrB->pin |= 1 << LED_PIN;
+        }
     }   
     return 0;
-}
-
-static void LEDCallback()
-{
-    if(Maat_TimeNow() > 10000000ULL)
-    {
-        ptrB->pin |= (1 << LED_PIN);
-    }
 }
