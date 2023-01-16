@@ -4,13 +4,16 @@
 #include "maat.h"
 #include "maat_string.h"
 
+
+#define ATUM_LED_ID    (0x534000)
+
 int32_t Atum_LEDInit(char log[]);
 
 int32_t Atum_LEDMain();
 
-#define ATUM_LED_TELEM_LEN  (1)
+#define ATUM_LED_MSG_LEN  (2)
 
-MAAT_TELEM_T g_AtumLEDTelemTbl[ATUM_LED_TELEM_LEN];
+MAAT_MSG_T g_AtumLEDMsgTbl[ATUM_LED_MSG_LEN];
 
 #endif
 
@@ -23,7 +26,12 @@ char* g_strLog;
 
 int32_t Atum_LEDInit(char log[])
 {
-    g_AtumLEDTelemTbl[0].type = TELEM_LONG;
+    g_AtumLEDMsgTbl[0].hdr.ulID = ATUM_LED_ID | 0x00;
+    g_AtumLEDMsgTbl[0].hdr.type = MSG_TELEM;
+    g_AtumLEDMsgTbl[0].data.telem.type = TELEM_ULONG;
+    g_AtumLEDMsgTbl[1].hdr.ulID = ATUM_LED_ID | 0x01;
+    g_AtumLEDMsgTbl[1].hdr.type = MSG_LOG;
+    g_AtumLEDMsgTbl[1].hdr.ulSize = sizeof(g_AtumLEDMsgTbl[0].data.log);
     ptrB->ddr |= (1 << LED_PIN);
     ptrB->port &= ~(1 << LED_PIN);
     g_strLog = log;
@@ -33,8 +41,8 @@ int32_t Atum_LEDInit(char log[])
 int32_t Atum_LEDMain()
 {
     ptrB->pin |= 1 << LED_PIN;
-    g_AtumLEDTelemTbl[0].data.lLong = g_ulIter;
-    Maat_Sprintf(g_strLog, "ATUM_LED: %u\n", g_ulIter);
+    g_AtumLEDMsgTbl[0].data.telem.data.ulLong = g_ulIter;
+    Maat_Sprintf(g_AtumLEDMsgTbl[1].data.log, "ATUM_LED: %u\n", g_ulIter);
     g_ulIter++;
     return 0;
 }

@@ -1,10 +1,9 @@
 #include "maat.h"
 #include "maat_string.h"
-#include "avr/io.h"
-#include "avr/interrupt.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
-#define LOG_SIZE    (256)
-
+#define MAAT_TELEM_ID       (0x096600)
 #define SCH_MINOR_FRAME_SEC 1 / 100
 #define TIMER_COMA          (6)
 #define TIMER_MODE_TOGGLE   (1)
@@ -20,13 +19,17 @@ static uint16_t             g_uiSchTableLen;
 static uint16_t             g_uiAppTableLen;
 static bool_t               g_bNextItemFlag = false;
 static bool_t               g_bRunStatus = true;
-static char                 g_strLog[LOG_SIZE] = {0};
+static MAAT_MSG_T           g_MaatMsg = {0};
 
 int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP_T appTable[],  uint16_t uiAppTableLen)
 {
     int8_t iStatus = 0;
     iStatus = Maat_InitUART(57600);
-    // Maat_StrWriteUART("MAAT SCHEDULER STARTING\n");
+    g_MaatMsg.hdr.ulID = MAAT_TELEM_ID;
+    g_MaatMsg.hdr.type = MSG_LOG;
+    g_MaatMsg.hdr.ulSize = sizeof(g_MaatMsg.data.log);
+    Maat_Sprintf(g_MaatMsg.data.log, "MAAT SCHEDULER STARTING\n");
+    Maat_MsgWriteUART(&g_MaatMsg);
     if(iStatus)
     {
         goto exit;
@@ -41,16 +44,15 @@ int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP
     ptrTIMSK->uiTIMSK1 |= TIMSK_A;
     for(uint8_t i = 0; i < uiAppTableLen; i++)
     {
-        iStatus = g_AppTable[i].Init(g_strLog);
+        iStatus = g_AppTable[i].Init();
         if(iStatus)
         {
-            Maat_Sprintf(g_strLog, "ERROR: INIT SCH ITEM %u\n", i);
+            Maat_Sprintf(g_MaatMsg.data.log, "ERROR: INIT SCH ITEM %u\n", i);
             break;
         }
-        Maat_Sprintf(g_strLog, "INIT SCH ITEM %u SUCCESS\n", i);
+        Maat_Sprintf(g_MaatMsg.data.log, "INIT SCH ITEM %u SUCCESS\n", i);
     }
-    // Maat_StrWriteUART(g_strLog);
-    g_strLog[0] = 0;
+    Maat_MsgWriteUART(&g_MaatMsg);
 exit:
     return iStatus;
 }
@@ -69,10 +71,18 @@ void Maat_RunSch()
             if(ptrSchItem->ptrApp)
             {
                 ptrSchItem->ptrApp->Main();
-                Maat_WriteUART((char*) ptrSchItem->ptrApp->telemTbl,
-                                sizeof(MAAT_TELEM_T) * ptrSchItem->ptrApp->uiTelemTblLen);
-                // Maat_StrWriteUART(g_strLog);
-                g_strLog[0] = 0;
+                for(uint8_t i = 0; i < ptrSchItem->ptrApp->uiMsgTblLen; i++)
+                {
+                    if(ptrSchItem->ptrApp->msgTbl[i].hdr.type == MSG_TELEM)
+                    {
+                        ptrSchItem->ptrApp->msgTbl[i].hdr.ulSize = sizeof(ptrSchItem->ptrApp->msgTbl[i].data.telem);
+                    }
+                    else if(ptrSchItem->ptrApp->msgTbl[i].hdr.type == MSG_LOG)
+                    {
+                        ptrSchItem->ptrApp->msgTbl[i].hdr.ulSize = sizeof(ptrSchItem->ptrApp->msgTbl[i].data.log);
+                    }
+                    Maat_MsgWriteUART(&ptrSchItem->ptrApp->msgTbl[i]);
+                }
             }
             if(uiItemNum == g_uiSchTableLen)
             {

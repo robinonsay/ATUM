@@ -1,3 +1,4 @@
+#include "maat_types.h"
 #include "maat_string.h"
 #include <avr/common.h>
 #include <stdarg.h>
@@ -5,6 +6,14 @@
 #define BASE_10 (10)
 
 char g_Digits[] = "0123456789";
+
+void Maat_Memcpy(char* dest, char* src, size_t len)
+{
+    for(size_t i = 0; i < len; i++)
+    {
+        dest[i] = src[i];
+    }
+}
 
 unsigned long Maat_Strlen(char str[])
 {

@@ -1,4 +1,5 @@
 #include "maat.h"
+#include <util/crc16.h>
 
 #define RX_ENABLE   (4)
 #define TX_ENABLE   (3)
@@ -72,5 +73,22 @@ int8_t Maat_StrReadStrUART(char* str, size_t sBuffSize)
         }
     }
     iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
+    return iStatus;
+}
+
+int8_t Maat_MsgWriteUART(MAAT_MSG_T* msg)
+{
+    int8_t iStatus = 0;
+    msg->crc = 0;
+    for(size_t i=0; i < sizeof(MAAT_MSG_T) - sizeof(msg->crc); i++)
+    {
+        while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
+        ptrUSART->uiUDR = ((uint8_t *) msg)[i];
+        msg->crc = _crc_xmodem_update(msg->crc, ((uint8_t *) msg)[i]);
+    }
+    while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
+    ptrUSART->uiUDR = (uint8_t)(msg->crc & 0xFF);
+    while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
+    ptrUSART->uiUDR = (uint8_t)((msg->crc & 0xFF00) >> 8);
     return iStatus;
 }

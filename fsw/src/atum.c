@@ -9,8 +9,8 @@ MAAT_APP_T g_AppTable[] =
     {
         .Init = Atum_LEDInit,
         .Main = Atum_LEDMain,
-        .uiTelemTblLen = ATUM_LED_TELEM_LEN,
-        .telemTbl = g_AtumLEDTelemTbl
+        .uiMsgTblLen = ATUM_LED_MSG_LEN,
+        .msgTbl = g_AtumLEDMsgTbl
     }
 };
 
