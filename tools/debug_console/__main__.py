@@ -18,7 +18,7 @@ def main(stdscr, device, baud_rate):
     bytes_pad.idlok(True)
     with serial.Serial(device, baud_rate, parity=serial.PARITY_EVEN, timeout=0.5) as ser:
         stdscr.clear()
-        stdscr.addstr(curses.LINES // 2 - 1, 0, "LOG:")
+        stdscr.addstr(curses.LINES // 2 - 1, 0, "LOG:", curses.A_BOLD)
         while True:
             msg = Msg(ser)
             if msg.empty:

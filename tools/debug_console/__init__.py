@@ -20,8 +20,8 @@ class Msg:
             msg_size = 256 + 2
             data = ser.read(msg_size)
             if data and len(data) == msg_size:
-                self.crc16 = struct.unpack('<H', data[-2:])[0]
-                self.valid = binascii.crc_hqx(hdr + data[:-2], 0) == self.crc16
+                self.crc16 = struct.unpack('>H', data[-2:])[0]
+                self.valid = binascii.crc_hqx(hdr + data, 0) == 0
                 self.raw_data = data
                 self.data = data[:self.size]
             else:

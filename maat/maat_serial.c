@@ -42,8 +42,12 @@ int8_t Maat_ReadUART(char* ptrBuff, size_t sBuffSize)
         /* Wait for data to be received */
         while ( !(ptrUSART->uiUCSRA & (1 << RXC)) );
         ptrBuff[i] = ptrUSART->uiUDR;
+        iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
+        if(iStatus)
+        {
+            break;
+        }
     }
-    iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
     return iStatus;
 }
 
@@ -71,8 +75,12 @@ int8_t Maat_StrReadStrUART(char* str, size_t sBuffSize)
         {
             break;
         }
+        iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
+        if(iStatus)
+        {
+            break;
+        }
     }
-    iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
     return iStatus;
 }
 
@@ -87,8 +95,29 @@ int8_t Maat_MsgWriteUART(MAAT_MSG_T* msg)
         msg->crc = _crc_xmodem_update(msg->crc, ((uint8_t *) msg)[i]);
     }
     while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
-    ptrUSART->uiUDR = (uint8_t)(msg->crc & 0xFF);
-    while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
     ptrUSART->uiUDR = (uint8_t)((msg->crc & 0xFF00) >> 8);
+    while(!(ptrUSART->uiUCSRA & (1 << UDRE)));
+    ptrUSART->uiUDR = (uint8_t)(msg->crc & 0xFF);
+    return iStatus;
+}
+
+int8_t Maat_MsgReadUART(MAAT_MSG_T* msg)
+{
+    int8_t iStatus = 0;
+    uint16_t crc16 = 0;
+    uint8_t* uiBuff = (uint8_t*) msg;
+    for(size_t i = 0; i < sizeof(MAAT_MSG_T); i++)
+    {
+        /* Wait for data to be received */
+        while ( !(ptrUSART->uiUCSRA & (1 << RXC)) );
+        uiBuff[i] = ptrUSART->uiUDR;
+        crc16 = _crc_xmodem_update(crc16, uiBuff[i]);
+        iStatus = -(ptrUSART->uiUCSRA & (7 << UPE));
+        if(iStatus)
+        {
+            break;
+        }
+    }
+    iStatus = iStatus || crc16;
     return iStatus;
 }

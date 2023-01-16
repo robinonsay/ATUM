@@ -97,5 +97,6 @@ int8_t Maat_ReadUART(char* ptrBuff, size_t sBuffSize);
 int8_t Maat_StrWriteUART(char* str);
 int8_t Maat_StrReadStrUART(char* str, size_t sBuffSize);
 int8_t Maat_MsgWriteUART(MAAT_MSG_T* msg);
+int8_t Maat_MsgReadUART(MAAT_MSG_T* msg);
 
 #endif /* MAAT_H */
