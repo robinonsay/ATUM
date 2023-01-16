@@ -26,7 +26,7 @@ int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP
 {
     int8_t iStatus = 0;
     iStatus = Maat_InitUART(57600);
-    Maat_StrWriteUART("MAAT SCHEDULER STARTING\n");
+    // Maat_StrWriteUART("MAAT SCHEDULER STARTING\n");
     if(iStatus)
     {
         goto exit;
@@ -49,7 +49,7 @@ int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP
         }
         Maat_Sprintf(g_strLog, "INIT SCH ITEM %u SUCCESS\n", i);
     }
-    Maat_StrWriteUART(g_strLog);
+    // Maat_StrWriteUART(g_strLog);
     g_strLog[0] = 0;
 exit:
     return iStatus;
@@ -68,10 +68,10 @@ void Maat_RunSch()
             uiItemNum++;
             if(ptrSchItem->ptrApp)
             {
-                ptrSchItem->ptrApp->Main(g_strLog);
+                ptrSchItem->ptrApp->Main();
                 Maat_WriteUART((char*) ptrSchItem->ptrApp->telemTbl,
                                 sizeof(MAAT_TELEM_T) * ptrSchItem->ptrApp->uiTelemTblLen);
-                Maat_StrWriteUART(g_strLog);
+                // Maat_StrWriteUART(g_strLog);
                 g_strLog[0] = 0;
             }
             if(uiItemNum == g_uiSchTableLen)

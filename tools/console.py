@@ -17,9 +17,14 @@ def main(stdscr, device, baud_rate):
         stdscr.addstr((curses.LINES - 1) // 2 -1, 0, "Raw Output:",
                     curses.A_BOLD)
         while True:
-            lines  = ser.read(512)
-            # for n, line in enumerate(lines):
-            stdscr.addstr((curses.LINES - 1) // 2, 0, f"{lines.decode('UTF-8')}")
+            raw_bytes  = ser.read(512)
+            if raw_bytes:
+                telem_type = raw_bytes[0]
+            else:
+                telem_type = None
+            if telem_type == 3:
+                telem = struct.unpack('<l', raw_bytes[2:6])[0]
+                stdscr.addstr((curses.LINES - 1) // 2, 0, f"TELEM: {telem}")
             stdscr.refresh()
 
 
