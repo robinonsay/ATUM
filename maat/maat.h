@@ -7,70 +7,14 @@
 
 #include "maat_mem.h"
 #include "maat_types.h"
+#include "maat_msgs.h"
 
+
+#define MAAT_TELEM_ID       (0x96653400)
+#define MAAT_CMD_READY      (0xFF)
 #define NULL    ((void *) 0)
 #define true    (1)
 #define false   (0)
-#define LOG_SIZE        (256)
-#define TELEM_RAW_SIZE  (64)
-#define NUM_TELEM_ITEMS (8)
-
-typedef enum MAAT_TELEM_TYPE_TAG
-{
-    TELEM_FLOAT= 0,
-    TELEM_DOUBLE= 1,
-    TELEM_INT= 2,
-    TELEM_UINT= 3,
-    TELEM_LONG= 4,
-    TELEM_ULONG= 5,
-    TELEM_LLONG= 6,
-    TELEM_ULLONG= 7,
-    TELEM_RAW=8
-} MAAT_TELEM_TYPE_T;
-
-typedef enum MAAT_MSG_TYPE_TAG
-{
-    MSG_TELEM = 0,
-    MSG_LOG = 1
-} MAAT_MSG_TYPE_T;
-
-typedef union MAAT_TELEM_DATA_TAG
-{
-    float               fFloat;
-    double              dDouble;
-    int                 iInt;
-    unsigned int        uiInt;
-    long                lLong;
-    unsigned long       ulLong;
-    long long           llLongLong;
-    unsigned long long  ullLongLong;
-    char                raw[TELEM_RAW_SIZE];
-} MAAT_TELEM_DATA_T;
-
-typedef struct MAAT_TELEM_HDR_TAG
-{
-    unsigned long       ulID;
-    unsigned long       ulSize;
-    MAAT_MSG_TYPE_T     type;
-
-} MAAT_TELEM_HDR_T;
-
-typedef struct MAAT_TELEM_TAG
-{
-    MAAT_TELEM_TYPE_T   type;
-    MAAT_TELEM_DATA_T   data;
-} MAAT_TELEM_T;
-
-typedef struct MAAT_MSG_TAG
-{
-    MAAT_TELEM_HDR_T    hdr;
-    union
-    {
-        MAAT_TELEM_T    telem;
-        char            log[LOG_SIZE];
-    } data;
-    uint16_t            crc;
-} MAAT_MSG_T;
 
 typedef struct MAAT_APP_TAG
 {

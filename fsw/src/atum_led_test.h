@@ -5,8 +5,6 @@
 #include "maat_string.h"
 
 
-#define ATUM_LED_ID    (0x534000)
-
 int32_t Atum_LEDInit(char log[]);
 
 int32_t Atum_LEDMain();
@@ -26,10 +24,10 @@ char* g_strLog;
 
 int32_t Atum_LEDInit(char log[])
 {
-    g_AtumLEDMsgTbl[0].hdr.ulID = ATUM_LED_ID | 0x00;
+    g_AtumLEDMsgTbl[0].hdr.ulMid = 0x0000;
     g_AtumLEDMsgTbl[0].hdr.type = MSG_TELEM;
     g_AtumLEDMsgTbl[0].data.telem.type = TELEM_ULONG;
-    g_AtumLEDMsgTbl[1].hdr.ulID = ATUM_LED_ID | 0x01;
+    g_AtumLEDMsgTbl[1].hdr.ulMid = 0x0001;
     g_AtumLEDMsgTbl[1].hdr.type = MSG_LOG;
     g_AtumLEDMsgTbl[1].hdr.ulSize = sizeof(g_AtumLEDMsgTbl[0].data.log);
     ptrB->ddr |= (1 << LED_PIN);

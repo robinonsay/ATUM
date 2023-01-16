@@ -2,10 +2,12 @@ import serial
 import curses
 import argparse
 from curses import wrapper
-from debug_console import Telemetry, Log, Msg
+from debug_console import Telemetry, Log, Msg, Cmd
 
 dev = '/dev/ttyACM0'
 
+MAIN_SCH_ID = 0x96653400
+CMD_READY = (MAIN_SCH_ID, 0xFF, b'', 9)
 
 def main(stdscr, device, baud_rate):
     curses.noecho()
@@ -23,10 +25,11 @@ def main(stdscr, device, baud_rate):
             msg = Msg(ser)
             if msg.empty:
                 pass
-            elif msg.type == 0 and msg.id == 0x534000 and msg.valid:
+            elif msg.type == 0 and msg.valid:
                 telem = Telemetry(msg.data)
-                stdscr.addstr(0, 0, "ATUM LED:")
-                stdscr.addstr(1, 0, f"COUNT: {telem.data}")
+                if (msg.id & 0xFFFF0000) == 0:
+                    stdscr.addstr(0, 0, "ATUM LED:")
+                    stdscr.addstr(1, 0, f"COUNT: {telem.data}")
             elif msg.type == 1 and msg.valid:
                 log = Log(msg.data)
                 pos = log_pad.getyx()

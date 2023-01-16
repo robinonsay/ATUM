@@ -4,5 +4,6 @@
 
 void Maat_Init()
 {
+    Maat_InitUART(57600);
     sei();
 }

@@ -17,7 +17,7 @@ class Msg:
         self.empty = False
         if hdr and len(hdr) == 10:
             self.id, self.size, self.type = struct.unpack('<LLH', hdr)
-            msg_size = 256 + 2
+            msg_size = 128 + 2
             data = ser.read(msg_size)
             if data and len(data) == msg_size:
                 self.crc16 = struct.unpack('>H', data[-2:])[0]
@@ -42,3 +42,19 @@ class Telemetry:
         data_end = data_start + types_map[self.type][1]
         self.data = struct.unpack(f'<{types_map[self.type][0]}',
                                   bytes[data_start:data_end])[0]
+
+class Cmd:
+    
+    TYPE = 2
+    SIZE = 128 + 3
+
+    def send(ser: serial.Serial, mid, cmd_id, data: bytes, cmd_type=8):
+        cmd = struct.pack('<LLHBH',
+                          mid,
+                          Cmd.SIZE,
+                          Cmd.TYPE,
+                          cmd_id,
+                          cmd_type)
+        cmd += data + (Cmd.SIZE - len(data)) * b'\0'
+        cmd += struct.pack('>H', binascii.crc_hqx(cmd, 0))
+        ser.write(cmd)
