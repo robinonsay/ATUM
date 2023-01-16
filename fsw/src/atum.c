@@ -27,6 +27,7 @@ uint16_t g_uiAppTableLen = sizeof(g_AppTable) / sizeof(g_AppTable[0]);
 int main(void)
 {
     Maat_Init();
+    Maat_InitUART(0);
     Maat_InitSch(g_SchTable, g_uiSchTableLen, g_AppTable, g_uiAppTableLen);
     Maat_RunSch();
     return 0;

@@ -9,17 +9,22 @@
 #define RXC         (7)
 #define UPE         (2)
 #define UPM         (4)
-int8_t Maat_InitUART(unsigned long uiBaudRate)
+
+bool_t g_bInitUART = false;
+
+void Maat_InitUART(unsigned long uiBaudRate)
 {
-    int8_t iStatus = 0;
-    if(uiBaudRate == 0)
+    if(!g_bInitUART)
     {
-        uiBaudRate = MAA_DEFAULT_BAUD_RATE;
+        if(uiBaudRate == 0)
+        {
+            uiBaudRate = MAA_DEFAULT_BAUD_RATE;
+        }
+        ptrUSART->uiUBRR = (uint16_t)(0xFFF & (CLK_FREQ / (16 * uiBaudRate) - 1));\
+        ptrUSART->uiUCSRB = (1 << RX_ENABLE) | (1 << TX_ENABLE);
+        ptrUSART->uiUCSRC = (1 << USBS) | (3 << UCSZ) | (2 << UPM);
+        g_bInitUART = true;
     }
-    ptrUSART->uiUBRR = (uint16_t)(0xFFF & (CLK_FREQ / (16 * uiBaudRate) - 1));\
-    ptrUSART->uiUCSRB = (1 << RX_ENABLE) | (1 << TX_ENABLE);
-    ptrUSART->uiUCSRC = (1 << USBS) | (3 << UCSZ) | (2 << UPM);
-    return iStatus;
 }
 
 int8_t Maat_WriteUART(char* ptrBuff, size_t sBuffSize)

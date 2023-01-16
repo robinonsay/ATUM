@@ -23,7 +23,7 @@ static MAAT_MSG_T           g_MaatMsg = {0};
 int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP_T appTable[],  uint16_t uiAppTableLen)
 {
     int8_t iStatus = 0;
-    iStatus = Maat_InitUART(57600);
+    Maat_InitUART(0);
     g_MaatMsg.hdr.ulMid = MAAT_TELEM_ID;
     g_MaatMsg.hdr.type = MSG_LOG;
     g_MaatMsg.hdr.ulSize = sizeof(g_MaatMsg.data.log);

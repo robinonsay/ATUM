@@ -29,13 +29,12 @@ typedef struct MAAT_SCH_ITEM_TAG
     MAAT_APP_T* ptrApp;
 } MAAT_SCH_ITEM_T;
 
-
 void Maat_Init();
 
 int8_t Maat_InitSch(MAAT_SCH_ITEM_T schTable[], uint16_t uiSchTableLen, MAAT_APP_T appTable[],  uint16_t uiAppTableLen);
 void Maat_RunSch();
 
-int8_t Maat_InitUART(unsigned long uiBaudRate);
+void Maat_InitUART(unsigned long uiBaudRate);
 int8_t Maat_WriteUART(char* ptrBuff, size_t sBuffSize);
 int8_t Maat_ReadUART(char* ptrBuff, size_t sBuffSize);
 int8_t Maat_StrWriteUART(char* str);
